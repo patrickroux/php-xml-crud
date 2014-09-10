@@ -1,39 +1,38 @@
 <?php
 	session_start();
 	
-	$_SESSION['logged'] = false;
+	if( isset($_POST['email']) && !empty($_SESSION['email']) ){
+		//Honey Pot : This field must not be set or filled
+		header("Location:login.php");
+	}
+	else if( !isset($_POST['login']) || empty($_SESSION['login']) || !isset($_POST['pwd']) || empty($_SESSION['pwd']) ) {
+		//login empty or not set
+		header("Location:login.php");
+	}
 	
-	$userInput = $passInput = null;
-	if (isset($_SERVER['PHP_AUTH_USER']))
-		$userInput = $_SERVER['PHP_AUTH_USER'];
-	if (isset($_SERVER['PHP_AUTH_PW']))
-		$passInput = $_SERVER['PHP_AUTH_PW'];
+	$loginInput = $passInput = null;
 	
+	if (isset($_POST['login']))
+		$loginInput = $_POST['login'];
+	if (isset($_POST['pwd']))
+		$passInput = md5($_POST['pwd']);
+		
 	$users = simplexml_load_file("data/users.xml");
-	$validated = false;
-	$found = false;
-	
 	foreach ($users as $user){
-		$found = ($user->pseudo == $userInput && $user->pwd == md5($passInput));
+		$validated = ($user->pseudo == $loginInput && $user->pwd == $passInput);
 	}
-	if($found){
+	
+	if ($validated){
+		session_regenerate_id();
+		$_SESSION['session_id'] = session_id();
 		$_SESSION['logged'] = true;
-		$validated = true;
+		$_SESSION['login'] = $loginInput;
+		$_SESSION['pwd'] = $passInput;
+	}
+	else if (!$validated || !( isset($_SESSION['session_id']) && !empty($_SESSION['session_id']) && isset($_SESSION['logged']) && $_SESSION['logged'])){
+		header("Location:login.php");
 	}
 	
-	if (!$validated || (!isset($_SESSION['session_id']))) { 
-		header('WWW-Authenticate: Basic realm="My Realm"');
-		header('HTTP/1.0 401 Unauthorized');
-		
-		if (empty($_SESSION['session_id'])) {
-			session_regenerate_id();
-			$_SESSION['session_id'] = session_id();
-		}
-		
-		
-		die ("Not authorized");
-	
-	}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
