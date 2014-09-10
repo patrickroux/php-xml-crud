@@ -13,3 +13,11 @@ In this fork :
 * Deletion : adding modal confirmation
 * Enhencing redirection after actions
 * Adding edit buttons on search results
+* Authentication and logging out
+
+
+About authentication
+--------------------
+
+User are stored in data/users.xml.
+Feel free to fork this project to add admin users management.
