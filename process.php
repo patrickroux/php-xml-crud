@@ -1,4 +1,21 @@
 <?php
+	$userInput = $_SERVER['PHP_AUTH_USER'];
+	$passInput = $_SERVER['PHP_AUTH_PW'];
+	
+	$users = simplexml_load_file("data/users.xml");
+	$validated = false;
+	foreach ($users as $user){
+		$validated = ($user->pseudo == $userInput && $user->pseudo == $passInput);
+	}
+
+	if (!$validated) {
+		header('WWW-Authenticate: Basic realm="My Realm"');
+		header('HTTP/1.0 401 Unauthorized');
+		die ("Not authorized");
+	}
+?>
+
+<?php
 /**
  * Created by Gayan Hewa
  * User: Gayan
@@ -12,7 +29,7 @@ class Process
 
     public function __construct()
     {
-        $this->_xml = simplexml_load_file("data.xml");
+        $this->_xml = simplexml_load_file("data/data.xml");
     }
 
     public function getXml()

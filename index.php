@@ -1,3 +1,40 @@
+<?php
+	session_start();
+	
+	$_SESSION['logged'] = false;
+	
+	$userInput = $passInput = null;
+	if (isset($_SERVER['PHP_AUTH_USER']))
+		$userInput = $_SERVER['PHP_AUTH_USER'];
+	if (isset($_SERVER['PHP_AUTH_PW']))
+		$passInput = $_SERVER['PHP_AUTH_PW'];
+	
+	$users = simplexml_load_file("data/users.xml");
+	$validated = false;
+	$found = false;
+	
+	foreach ($users as $user){
+		$found = ($user->pseudo == $userInput && $user->pwd == md5($passInput));
+	}
+	if($found){
+		$_SESSION['logged'] = true;
+		$validated = true;
+	}
+	
+	if (!$validated || (!isset($_SESSION['session_id']))) { 
+		header('WWW-Authenticate: Basic realm="My Realm"');
+		header('HTTP/1.0 401 Unauthorized');
+		
+		if (empty($_SESSION['session_id'])) {
+			session_regenerate_id();
+			$_SESSION['session_id'] = session_id();
+		}
+		
+		
+		die ("Not authorized");
+	
+	}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -18,8 +55,6 @@
 </head>
 <body>
 
-
-
 	<div class="navbar navbar-default" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
@@ -35,6 +70,7 @@
 				<ul class="nav navbar-nav">
 					<li><a href="process.php?list">List all users</a></li>
 					<li><a href="process.php?add">Add user</a></li>
+					<li><a href="logout.php">Log out</a></li>
 				</ul>
 				<form class="navbar-form navbar-right" role="search" method="POST" action="process.php?filter">
 					<div class="form-group">
