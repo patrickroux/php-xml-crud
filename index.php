@@ -4,8 +4,8 @@
 	if( isset($_POST['email']) && !empty($_SESSION['email']) ){
 		//Honey Pot : This field must not be set or filled
 		header("Location:login.php");
-	}
-	else if( !isset($_POST['login']) || empty($_SESSION['login']) || !isset($_POST['pwd']) || empty($_SESSION['pwd']) ) {
+	} 
+	else if( !(isset($_SESSION['logged']) && $_SESSION['logged']) && (!isset($_POST['login']) || empty($_POST['login']) || !isset($_POST['pwd']) || empty($_POST['pwd'])) ) {
 		//login empty or not set
 		header("Location:login.php");
 	}
@@ -29,9 +29,11 @@
 		$_SESSION['login'] = $loginInput;
 		$_SESSION['pwd'] = $passInput;
 	}
-	else if (!$validated || !( isset($_SESSION['session_id']) && !empty($_SESSION['session_id']) && isset($_SESSION['logged']) && $_SESSION['logged'])){
+	
+	if (!isset($_SESSION['session_id']) || empty($_SESSION['session_id']) || !isset($_SESSION['logged']) || !$_SESSION['logged']){
 		header("Location:login.php");
 	}
+
 	
 ?>
 <!DOCTYPE html>
