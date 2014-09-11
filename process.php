@@ -129,7 +129,7 @@ class Process
     public function adduser($post)
     {
         if ($post && 
-			$post["name"] != "" &&
+            $post["name"] != "" &&
             $post["id"] != "" &&
             $post["job"] != "" &&
             $post["personality"] != "" &&
@@ -189,7 +189,7 @@ $arr = explode("=", $param);
 if (count($arr) > 1) {
     $param = $arr[0];
 }
-$path = getcwd()."/data.xml";
+$path = getcwd()."/data/data.xml";
 $process = new Process();
 $process->setPath($path);
 if ($param == "list") {
